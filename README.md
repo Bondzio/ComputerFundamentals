@@ -1,3 +1,4 @@
+```
 — Dark is a computer architecture simulator
 — You can write programs in assembly language and test their execution on accumulator machine, stack machine, load-store machine, memory-memory machine or virtual machine
 — In AoC you will only be tested in two of the architectures: Load-Store and Stack architecture
@@ -194,3 +195,4 @@ jmp start
 Note that the assembly code for a for-loop is identical to the while-loop of the previous example.
 end:
 ￼￼>)>)>)>
+```
