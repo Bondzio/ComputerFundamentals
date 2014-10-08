@@ -176,23 +176,25 @@ a = a + 1;
 ; Note: a=$5,$6=10
 load $5, $0
 load $6, 10
+
+
+```
 ￼￼￼￼￼￼￼￼￼￼￼ 
 ￼￼
 ￼22
-FOR loops
-Java DARK
-int j = 5;
-for(int i = 0; i <= j; i++){
-load $5, 0
-load $6, 5
-; i=0 ; j=5
-￼}
-jgt $5, $6, end
-; something to do
-inc $5
-jmp start
-// something to do start:
-Note that the assembly code for a for-loop is identical to the while-loop of the previous example.
-end:
-￼￼>)>)>)>
+
+**FOR loops**
 ```
+Java:                               DARK:
+
+int j = 5;                                        load $5, 0         ; i=0 
+for(int i = 0; i <= j; i++){                      load $6, 5         ; j=5
+    //something to do                     start:
+￼}                                                 jgt $5, $6, end
+                                                  ; something to do
+                                                  inc $5
+                                                  jmp start
+                                          end:
+                                          
+```
+Note that the assembly code for a for-loop is identical to the while-loop of the previous example.
