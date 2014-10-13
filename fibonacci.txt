@@ -1,0 +1,22 @@
+main
+	;Skriv inn din kode her.
+	load $4, 0
+	load $5, 1
+	load $6, 1
+	jne $2, $0, ifnull
+	jne $2, $5, ifone
+	ifnull:
+		load $3, 0
+		stopp
+	ifone:
+		load $3, 1
+		stopp
+	loop:
+		inc $6
+		add $3, $5, $4
+		add $4, $5, 0
+		add $5, $3, 0
+		jne $6, $2, stopp
+		loop
+
+end main
