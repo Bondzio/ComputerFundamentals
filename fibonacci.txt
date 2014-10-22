@@ -20,3 +20,37 @@ main
 		loop
 
 end main
+
+
+————————løsnignsforslag
+
+;***************************************************************************
+;* Løsningsforslag til Dark-oppgavene i AOC høsten 2003.                   *
+;* Beregning av Fibonacci-tallene på load-store arkitektur.                *
+;* Per Kristian Lehre <lehre@idi.ntnu.no>                                  *
+;* Rettet av Asbjørn Djupdal <djupdal@idi.ntnu.no>                         *
+;***************************************************************************
+main          
+	; load $2, 5        ; The argument is stored in register 2.
+	load $7, 2          ; Always set to 2
+	load $4, 1          ; How far have we computed?
+	load $5, 1
+	store $5, $4+0      ; Compute first two values
+	inc $4
+	store $5, $4+0
+	inc $4
+cfib
+	jgt $4, $2, fibend  ; Have we computed enough?
+	mv $5, $4
+	dec $5
+	load $10, $5+0
+	dec $5
+	load $11, $5+0
+	add $12, $10, $11
+	store $12, $4+0
+	inc $4
+	jmp cfib
+fibend
+	load $3, $2+0
+	stop
+end main
