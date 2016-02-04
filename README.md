@@ -1,3 +1,6 @@
+##[Operating Systems](OperatingSystems/)
+###[Operativsystemer](OperatingSystems/README.md)
+
 Computer Fundamentals
 ==
 
