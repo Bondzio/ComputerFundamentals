@@ -1,5 +1,7 @@
 package com.junjunguo.os.practice.synchronize;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * This file is part of OperatingSystems.
  * <p/>
@@ -34,10 +36,24 @@ public class Skriver extends Thread {
         }
     }
 
+    public void myPrint() {
+        for (int i = 0; i < 5; i++) {
+            System.out.print(forsteOrd);
+            System.out.println(andreOrd);
+            // Vent noen tidels sekunder
+            try {
+                TimeUnit.MILLISECONDS.sleep((long) Math.random() * 700);
+            } catch (InterruptedException e) {
+                // Kommer hit hvis noen kalte interrupt() på denne tråden.
+                // Det skjer ikke i denne applikasjonen.
+            }
+        }
+    }
+
     // Metoden som blir kjørt når applikasjonen starter
     public static void main(String[] args) {
         if (args.length < 4) {
-            args = new String[]{"kake", "spade", "bamse", "mums"};
+            args = new String[]{"1 kake  ", "2 spade ", "3 bamse ", "4 mums "};
         }
 
         // Opprett skjerm-objektet
@@ -45,8 +61,15 @@ public class Skriver extends Thread {
         // Start to skrivertråder som skriver ut ordene som ble gitt inn fra kommandolinja
         Skriver skriver1, skriver2;
         skriver1 = new Skriver(skjerm, args[0], args[1]);
-        skriver1.start();
         skriver2 = new Skriver(skjerm, args[2], args[3]);
+
+        System.out.println("-- without synchronize");
+        skriver1.myPrint();
+        skriver2.myPrint();
+
+        System.out.println("\n-- with synchronize");
+        skriver1.start();
         skriver2.start();
+
     }
 }
