@@ -44,4 +44,8 @@ public interface Gui
 	 * @param pos	The position of the barber's chair.
 	 */
 	public void barberIsAwake(int pos);
+
+	int getBarberSleepSliderValue();
+	int getBarberWorkSliderValue();
+	int getDoormanSleepSliderValue();
 }
