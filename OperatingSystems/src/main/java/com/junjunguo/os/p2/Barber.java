@@ -36,6 +36,15 @@ public class Barber extends Thread {
         super.run();
     }
 
+    /**
+     * a barber day dream by given time
+     * <p/>
+     * when barber is awake he waits for a customer ready notify from doorman;
+     * <p/>
+     * when a customer is ready he will hair dress the customer by given time;
+     * <p/>
+     * when the barber is finished he send a notify to doorman about it
+     */
     private void barberWork() {
         while (started) {
             try {
@@ -44,20 +53,23 @@ public class Barber extends Thread {
                 //                sleep(1000 + (int) (Math.random() * (2000)));
                 sleep(gui.getBarberSleepSliderValue());
                 gui.barberIsAwake(pos);
-                gui.println(this.getName() + " Barber-" + pos + " is waiting for customer.");
+                synchronized (queue) {
+                    queue.notify();
+                }
                 synchronized (gui) {
+                    gui.println(this.getName() + " Barber-" + pos + " is waiting for customer # # #");
                     gui.wait();
                 }
                 // start hairdresser when notified
                 Customer c = queue.getCustomer();
-                gui.fillBarberChair(pos, c);
-                gui.println(this.getName() + " Barber-" + pos + " start hair dress customer:" + c.getCustomerID());
-                //                sleep(20000 + (int) (Math.random() * (30000)));
-                sleep(gui.getBarberWorkSliderValue());
-                gui.println(this.getName() + " Barber-" + pos + " finished hair dress customer:" + c.getCustomerID());
-                gui.emptyBarberChair(pos);
-                synchronized (queue) {
-                    queue.notify();
+                if (c != null) {
+                    gui.fillBarberChair(pos, c);
+                    gui.println(this.getName() + " Barber-" + pos + " start hair dress customer:" + c.getCustomerID());
+                    //                sleep(20000 + (int) (Math.random() * (30000)));
+                    sleep(gui.getBarberWorkSliderValue());
+                    gui.println(
+                            this.getName() + " Barber-" + pos + " finished hair dress customer:" + c.getCustomerID());
+                    gui.emptyBarberChair(pos);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -65,14 +77,11 @@ public class Barber extends Thread {
         }
     }
 
-
     /**
      * Stops the barber thread.
      */
     public void stopThread() {
         started = false;
     }
-
-    // Add more methods as needed
 }
 

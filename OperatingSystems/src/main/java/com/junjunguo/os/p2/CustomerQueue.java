@@ -30,14 +30,13 @@ public class CustomerQueue {
     public void newCustomer() {
         if (queue.size() < maxQueue) {
             Customer c = new Customer();
+            // use customer id to decide where to sit
             gui.fillLoungeChair((c.getCustomerID() - 1) % 18, c);
             queue.add(c);
-            gui.println("");
         } else {
             gui.println("the queue is full!");
         }
     }
-
 
     /**
      * Gets longest waiting customer and remove it form queue.
@@ -55,14 +54,20 @@ public class CustomerQueue {
         return c;
     }
 
+    /**
+     * Is queue full: boolean.
+     *
+     * @return the boolean
+     */
     public boolean isFull() {
         return maxQueue == queue.size();
     }
 
-    public boolean notEmpty() {
-        return queue.size() > 0;
-    }
-
+    /**
+     * Queue size: int.
+     *
+     * @return the int
+     */
     public int queueSize() {
         return queue.size();
     }

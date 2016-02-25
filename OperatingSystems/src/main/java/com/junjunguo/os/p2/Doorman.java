@@ -26,7 +26,6 @@ public class Doorman extends Thread {
     public void startThread() {
         started = true;
         notifyC();
-        //        new NotifyC().start();
         start(); // java start let
     }
 
@@ -45,7 +44,6 @@ public class Doorman extends Thread {
     private void addCustomer() {
         while (started) {
             try {
-                //                sleep(5000 + (int) (Math.random() * (10000)));
                 sleep(gui.getDoormanSleepSliderValue());
                 newCustomer();
             } catch (InterruptedException e) {
@@ -64,22 +62,19 @@ public class Doorman extends Thread {
         } else {
             gui.println(this.getName() + " Doorman: too many customers waiting!");
         }
-        synchronized (gui) {
-            gui.notify(); // wake up one waiting barber to server the customer
-        }
     }
 
     /**
-     * a thread do the notify job. When get a notify from a barber, this method will send a customer ready notify to all
-     * waiting barber.
+     * a thread do the notify job. When get a notify from a barber, this method will send a customer ready notify to
+     * waiting barbers.
      */
     private void notifyC() {
-        gui.println("-----doorman notify c");
         new Thread(new Runnable() {
+            volatile int s;
+
             public void run() {
                 while (started) {
-                    int s = queue.queueSize();
-                    gui.println("-----doorman waiting queue size-" + s);
+                    s = queue.queueSize();
                     if (s > 0) {
                         try {
                             synchronized (queue) {
@@ -87,7 +82,14 @@ public class Doorman extends Thread {
                             }
                             gui.println("-----doorman get notify and notify back");
                             synchronized (gui) {
-                                gui.notifyAll();// wakeup all waiting barbers
+                                if (s > 2) {
+                                    gui.notifyAll();// wakeup all waiting barbers
+                                } else if (s == 2) {
+                                    gui.notify();
+                                    gui.notify();
+                                } else {
+                                    gui.notify(); // wakeup one waiting barber
+                                }
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -98,33 +100,10 @@ public class Doorman extends Thread {
         }).start();
     }
 
-
     /**
      * Stops the doorman thread.
      */
     public void stopThread() {
         started = false;
     }
-
-    //    class NotifyC extends Thread {
-    //        public void run() {
-    //            while (started) {
-    //                if (queue.queueSize() > 0) {
-    //                gui.println("-----doorman waiting queue size-" + queue.queueSize());
-    //                    try {
-    //                        synchronized (gui) {
-    //                            gui.wait();
-    //                        }
-    //                        synchronized (gui) {
-    //                            gui.notifyAll();// wakeup all waiting barbers
-    //                        gui.println("-----doorman get notify and notify all back");
-    //                        }
-    //                        //                cnr--;
-    //                    } catch (InterruptedException e) {
-    //                        e.printStackTrace();
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
 }
