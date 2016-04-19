@@ -57,7 +57,7 @@ public class Memory {
 				// Allocate memory to this process
 				freeMemory -= nextProcess.getMemoryNeeded();
 				nextProcess.leftMemoryQueue(clock);
-				memoryQueue.removeNext();
+				memoryQueue.removeNext();					// remove the process
 				return nextProcess;
 			}
 		}

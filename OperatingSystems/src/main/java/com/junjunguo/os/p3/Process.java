@@ -17,11 +17,11 @@ public class Process implements Constants {
     private long  processId;
     /** The color of this process */
     private Color color;
-    /** The amount of memory needed by this process */
+    /** The amount of memory needed by this process (generated) */
     private long  memoryNeeded;
-    /** The amount of cpu time still needed by this process */
+    /** The amount of cpu time still needed by this process (generated) */
     private long  cpuTimeNeeded;
-    /** The average time between the need for I/O operations for this process */
+    /** The average time between the need for I/O operations for this process (generated) */
     private long  avgIoInterval;
     /** The time left until the next time this process needs I/O */
     private long timeToNextIoOperation = 0;
@@ -44,6 +44,8 @@ public class Process implements Constants {
 
     /** The global time of the last event involving this process */
     private long timeOfLastEvent;
+    /** The global time when this process is created */
+    private long creationTime = 0;
 
     /**
      * Creates a new process with given parameters. Other parameters are randomly determined.
@@ -60,6 +62,7 @@ public class Process implements Constants {
         avgIoInterval = (1 + (long) (Math.random() * 25)) * cpuTimeNeeded / 100;
         // The first and latest event involving this process is its creation
         timeOfLastEvent = creationTime;
+        this.creationTime = creationTime;
         // Assign a process ID
         processId = nextProcessId++;
         // Assign a pseudo-random color used by the GUI
@@ -67,6 +70,7 @@ public class Process implements Constants {
         int green = 64 + (int) ((processId * 47) % 128);
         int blue  = 64 + (int) ((processId * 53) % 128);
         color = new Color(red, green, blue);
+        timeToNextIoOperation = avgIoInterval; // init time to next io operation
     }
 
     /**
@@ -99,6 +103,22 @@ public class Process implements Constants {
     }
 
     /**
+     * Updates the statistics collected by the given Statistic object, adding data collected by this process. This
+     * method is called when the process leaves the system.
+     *
+     * @param statistics The Statistics object to be updated.
+     */
+    public void updateStatistics(Statistics statistics) {
+        statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
+        statistics.totalTimeSpentWaitingForCpu += timeSpentInReadyQueue;
+        statistics.totalSystemTime += timeOfLastEvent - creationTime;
+        statistics.totalNofTimesInCPUQueue += nofTimesInReadyQueue;
+        statistics.totalCPUTimeSpentProcessing += timeSpentInCpu;
+        statistics.totalNofTimesInIOQueue += nofTimesInIoQueue;
+        statistics.nofCompletedProcesses++;
+    }
+
+    /**
      * Returns the amount of memory needed by this process.
      *
      * @return The amount of memory needed by this process.
@@ -108,15 +128,84 @@ public class Process implements Constants {
     }
 
     /**
-     * Updates the statistics collected by the given Statistic object, adding data collected by this process. This
-     * method is called when the process leaves the system.
+     * The amount of cpu time still needed by this process.
      *
-     * @param statistics The Statistics object to be updated.
+     * @return The amount of cpu time still needed by this process.
      */
-    public void updateStatistics(Statistics statistics) {
-        statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
-        statistics.nofCompletedProcesses++;
+    public long getCpuTimeNeeded() {
+        return cpuTimeNeeded;
     }
 
-    // Add more methods as needed
+    /**
+     * The process enters to the cpu queue.
+     *
+     * @param clock the clock when it enters
+     */
+    public void enterCPUQueue(long clock) {
+        nofTimesInReadyQueue++;
+        timeOfLastEvent = clock;
+    }
+
+    /**
+     * The process enters the cpu.
+     *
+     * @param clock the clock when it enters
+     */
+    public void enterCPU(long clock) {
+        timeSpentInReadyQueue += clock - timeOfLastEvent;
+        timeOfLastEvent = clock;
+    }
+
+    /**
+     * The process Leaves the cpu.
+     *
+     * @param clock the clock
+     */
+    public void leaveCPU(long clock) {
+        timeSpentInCpu += clock - timeOfLastEvent;
+        cpuTimeNeeded -= clock - timeOfLastEvent;
+        timeToNextIoOperation -= clock - timeOfLastEvent;
+        timeOfLastEvent = clock;
+    }
+
+    /**
+     * Gets time to next io operation.
+     *
+     * @return The time left until the next time this process needs I/O.
+     */
+    public long getTimeToNextIoOperation() {
+        if (timeToNextIoOperation == 0) timeToNextIoOperation = avgIoInterval;
+        return timeToNextIoOperation;
+    }
+
+    /**
+     * Enter io queue.
+     *
+     * @param clock the clock
+     */
+    public void enterIOQueue(long clock) {
+        nofTimesInIoQueue++;
+        timeOfLastEvent = clock;
+    }
+
+    /**
+     * Enter io.
+     *
+     * @param clock the clock
+     */
+    public void enterIO(long clock) {
+        timeSpentWaitingForIo += clock - timeOfLastEvent;
+        timeOfLastEvent = clock;
+    }
+
+    /**
+     * Leave io.
+     *
+     * @param clock the clock
+     */
+    public void leaveIO(long clock) {
+        timeSpentInIo += clock - timeOfLastEvent;
+        timeToNextIoOperation = getTimeToNextIoOperation();
+        timeOfLastEvent = clock;
+    }
 }
