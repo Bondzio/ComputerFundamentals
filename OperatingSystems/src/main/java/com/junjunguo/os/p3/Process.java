@@ -24,8 +24,7 @@ public class Process implements Constants {
     /** The average time between the need for I/O operations for this process (generated) */
     private long  avgIoInterval;
     /** The time left until the next time this process needs I/O */
-    private long timeToNextIoOperation = 0;
-
+    private long timeToNextIoOperation     = 0;
     /** The time that this process has spent waiting in the memory queue */
     private long timeSpentWaitingForMemory = 0;
     /** The time that this process has spent waiting in the CPU queue */
@@ -36,12 +35,10 @@ public class Process implements Constants {
     private long timeSpentWaitingForIo     = 0;
     /** The time that this process has spent performing I/O */
     private long timeSpentInIo             = 0;
-
     /** The number of times that this process has been placed in the CPU queue */
-    private long nofTimesInReadyQueue = 0;
+    private long nofTimesInReadyQueue      = 0;
     /** The number of times that this process has been placed in the I/O queue */
-    private long nofTimesInIoQueue    = 0;
-
+    private long nofTimesInIoQueue         = 0;
     /** The global time of the last event involving this process */
     private long timeOfLastEvent;
     /** The global time when this process is created */
@@ -53,20 +50,15 @@ public class Process implements Constants {
      * @param memorySize   The size of the memory unit.
      * @param creationTime The global time when this process is created.
      */
-    public Process(long memorySize, long creationTime) {
-        // Memory need varies from 100 kB to 25% of memory size
+    public Process(long memorySize, long creationTime) {// Memory need varies from 100 kB to 25% of memory size
         memoryNeeded = 100 + (long) (Math.random() * (memorySize / 4 - 100));
-        // CPU time needed varies from 100 to 10000 milliseconds
-        cpuTimeNeeded = 100 + (long) (Math.random() * 9900);
+        cpuTimeNeeded = 100 + (long) (Math.random() * 9900); // CPU time needed varies from 100 to 10000 milliseconds
         // Average interval between I/O requests varies from 1% to 25% of CPU time needed
         avgIoInterval = (1 + (long) (Math.random() * 25)) * cpuTimeNeeded / 100;
-        // The first and latest event involving this process is its creation
-        timeOfLastEvent = creationTime;
+        timeOfLastEvent = creationTime; // The first and latest event involving this process is its creation
         this.creationTime = creationTime;
-        // Assign a process ID
-        processId = nextProcessId++;
-        // Assign a pseudo-random color used by the GUI
-        int red   = 64 + (int) ((processId * 101) % 128);
+        processId = nextProcessId++; // Assign a process ID
+        int red   = 64 + (int) ((processId * 101) % 128); // Assign a pseudo-random color used by the GUI
         int green = 64 + (int) ((processId * 47) % 128);
         int blue  = 64 + (int) ((processId * 53) % 128);
         color = new Color(red, green, blue);
@@ -109,12 +101,14 @@ public class Process implements Constants {
      * @param statistics The Statistics object to be updated.
      */
     public void updateStatistics(Statistics statistics) {
-        statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
-        statistics.totalTimeSpentWaitingForCpu += timeSpentInReadyQueue;
-        statistics.totalSystemTime += timeOfLastEvent - creationTime;
-        statistics.totalNofTimesInCPUQueue += nofTimesInReadyQueue;
-        statistics.totalCPUTimeSpentProcessing += timeSpentInCpu;
-        statistics.totalNofTimesInIOQueue += nofTimesInIoQueue;
+        statistics.totalTimeSpentWaitingForMemory += this.timeSpentWaitingForMemory;
+        statistics.totalTimeSpentWaitingForCpu += this.timeSpentInReadyQueue;
+        statistics.totalTimeSpentWaitingForIo += this.timeSpentWaitingForIo;
+        statistics.totalNofTimesInCPUQueue += this.nofTimesInReadyQueue;
+        statistics.totalSystemTime += timeOfLastEvent - this.creationTime;
+        statistics.totalCPUTimeSpentProcessing += this.timeSpentInCpu;
+        statistics.totalIOTimeSpentProcessing += this.timeSpentInIo;
+        statistics.totalNofTimesInIOQueue += this.nofTimesInIoQueue;
         statistics.nofCompletedProcesses++;
     }
 
@@ -169,7 +163,7 @@ public class Process implements Constants {
     }
 
     /**
-     * Gets time to next io operation.
+     * Gets The time left until the next time this process needs I/O
      *
      * @return The time left until the next time this process needs I/O.
      */

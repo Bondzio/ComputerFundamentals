@@ -11,63 +11,33 @@ public class CPU {
     private Statistics statistics;
     private long clock = 0;
     private Process activeProcess;
-    //    private Gui        gui;
 
     /**
      * Creates a new CPU with the given parameters.
      *
-     * @param gui        A reference to the GUI interface.
      * @param cpuQueue   The CPU queue to be used.
      * @param maxCpuTime The Round Robin time quant to be used.
      * @param statistics A reference to the statistics collector.
      */
-    public CPU(Gui gui, Queue cpuQueue, long maxCpuTime, Statistics statistics) {
+    public CPU(Queue cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
         this.maxCpuTime = maxCpuTime;
         this.statistics = statistics;
-        //        this.gui = gui;
     }
 
     /**
-     * Switch process : .
+     * Switch process : Get a new process from the cpu queue to cpu.
      *
-     * @param clock the clock
-     * @return the event
-     */
-    public Process switchProcess(long clock) {
-        if (activeProcess != null) {
-            if (!cpuQueue.isEmpty()) {
-                //                activeProcess.leaveCPU(clock);
-                //                statistics.nofForcedProcessSwitches++;
-                //                cpuQueue.insert(activeProcess); // Put the active process at the end of the queue
-                Process newProcess = (Process) cpuQueue.removeNext(); // Switch in a new process from the cpu queue
-                activeProcess = newProcess;
-                activeProcess.enterCPUQueue(clock);
-            } // else the queue is empty the active process is allowed to continue
-        } else { // No active process, switch in a process if the queue is non-empty
-            if (!cpuQueue.isEmpty()) {
-                activeProcess = (Process) cpuQueue.removeNext();
-                activeProcess.enterCPUQueue(clock);
-            } else {
-                activeProcess = null;
-            }
-        }
-        return activeProcess;
-    }
-
-    /**
-     * Selects a new process from queue to be processed, updates queue time statistics
-     *
-     * @return the process that was selected or null if queue was empty
+     * @return the next process from the cpu queue, null if the queue was empty.
      */
     public Process switchProcess() {
         if (!cpuQueue.isEmpty()) {
-            Process p = (Process) cpuQueue.removeNext();
-            activeProcess = p;
-            p.enterCPU(clock);
-        } else
+            Process process = (Process) cpuQueue.removeNext();
+            activeProcess = process;
+            process.enterCPU(clock);
+        } else {
             activeProcess = null;
-
+        }
         return activeProcess;
     }
 
@@ -123,5 +93,4 @@ public class CPU {
     public long getMaxCpuTime() {
         return maxCpuTime;
     }
-
 }

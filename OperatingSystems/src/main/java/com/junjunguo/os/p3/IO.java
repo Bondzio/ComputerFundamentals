@@ -29,65 +29,39 @@ public class IO implements Constants {
     }
 
     /**
-     * Inserts a process into IO Queue and updates statistics for process p
+     * get a new process from I/O queue, updates process statistics
      *
-     * @param p The process to insert into queue.
-     */
-    public void insertProcess(Process p) {
-        ioQueue.insert(p);
-        p.enterIOQueue(this.clock);
-    }
-
-    /**
-     * Selects a new process from queue to be processed, updates queue time statistics
-     *
-     * @return the process that was selected or null if queue was empty
+     * @return next process from the queue, null if queue was empty
      */
     public Process switchProcess() {
         if (!ioQueue.isEmpty()) {
             Process p = (Process) ioQueue.removeNext();
             activeProcess = p;
             p.enterIO(this.clock);
-        } else
+        } else {
             activeProcess = null;
-
+        }
+        gui.setIoActive(activeProcess); // update GUI
         return activeProcess;
     }
 
-
     /**
-     * Add io request to IO queue.
+     * Add io request to IO queue and try to start IO operation.
      *
      * @param requestingProcess the requesting process
-     * @param clock             the clock
      * @return the event
      */
-    public Event addIoRequest(Process requestingProcess, long clock) {
+    public Event addIoRequest(Process requestingProcess) {
         ioQueue.insert(requestingProcess); // Add the process to the I/O queue
-        requestingProcess.enterIOQueue(clock);
-        return startIoOperation(clock);
-    }
-
-    /**
-     * Start io operation event.
-     *
-     * @param clock the clock
-     * @return the event
-     */
-    public Event startIoOperation(long clock) {
+        requestingProcess.enterIOQueue(this.clock);
         if (activeProcess == null) { // Check if a new I/O operation can be started: The device is free
-            if (!ioQueue.isEmpty()) { // process waiting
-                activeProcess = (Process) ioQueue.removeNext();
-                activeProcess.enterIO(clock);
-                gui.setIoActive(activeProcess);// Let the first process in the queue start I/O
-                                statistics.nofProcessedIoOperations++; // Update statistics
-                // Calculate the duration of the I/O operation and return the END_IO event
-                long ioOperationTime = avgIoTime; // time for IO to process an operation
-                return new Event(END_IO, clock + ioOperationTime);
-            } else { // else no process are waiting for I/O
-                gui.setIoActive(null);
+            Process p = switchProcess();
+            if (p != null) {
+                statistics.nofProcessedIoOperations++; // Update statistics
+                gui.setIoActive(p);
+                return new Event(END_IO, clock + getAvgIoTime()); // duration I/O operation, return END_IO event
             }
-        } else {  // else another process is already doing I/O
+            gui.setIoActive(null);
         }
         return null;
     }
@@ -101,7 +75,7 @@ public class IO implements Constants {
         Process process = activeProcess;
         activeProcess = null;
         if (process != null) {
-            process.leaveIO(this.clock);
+            process.leaveIO(clock);
         }
         return process;
     }
@@ -119,22 +93,12 @@ public class IO implements Constants {
         clock += timePassed;
     }
 
-
-    /**
-     * Is idle boolean.
-     *
-     * @return true if IO is free, false otherwise
-     */
-    public boolean isIdle() {
-        return activeProcess == null;
-    }
-
     /**
      * Gets avg io time.
      *
      * @return the avg io time
      */
     public long getAvgIoTime() {
-        return (long) (avgIoTime * Math.random() * 2);
+        return avgIoTime;
     }
 }

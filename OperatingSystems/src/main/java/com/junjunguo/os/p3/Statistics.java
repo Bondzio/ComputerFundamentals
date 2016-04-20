@@ -6,56 +6,62 @@ package com.junjunguo.os.p3;
  */
 public class Statistics {
     /** The number of processes that have exited the system */
-    public long nofCompletedProcesses = 0;
+    public long nofCompletedProcesses          = 0;
     /** The number of processes that have entered the system */
-    public long nofCreatedProcesses   = 0;
-
+    public long nofCreatedProcesses            = 0;
     /** The total time that all completed processes have spent waiting for memory */
     public long totalTimeSpentWaitingForMemory = 0;
-    /** The time-weighted length of the memory queue, divide this number by the total time to get average queue length */
+    /** The time-weighted length of the memory queue, divide this number by the total time to get average queue
+     * length */
     public long memoryQueueLengthTime          = 0;
-    /** The largest memory queue length that has occured */
+    /** The largest memory queue length that has occurred */
     public long memoryQueueLargestLength       = 0;
-
     /** The time-weighted length of the cpu queue, divide this number by the total time to get average queue length */
-    public long cpuQueueLengthTime       = 0;
-    /** The largest cpu queue length that has occured */
-    public long cpuQueueLargestLength    = 0;
+    public long cpuQueueLengthTime             = 0;
+    /** The largest cpu queue length that has occurred */
+    public long cpuQueueLargestLength          = 0;
     /**
      * The Io queue largest length.
      */
-    public long ioQueueLargestLength     = 0;
+    public long ioQueueLargestLength           = 0;
     /**
      * The Io queue length time.
      */
-    public long ioQueueLengthTime        = 0;
+    public long ioQueueLengthTime              = 0;
     /** Number of processed IO operations */
-    public int  nofProcessedIoOperations = 0;
+    public int  nofProcessedIoOperations       = 0;
     /**
      * The number of forced process switches.
      */
-    public int  nofForcedProcessSwitches = 0;
-
+    public int  nofForcedProcessSwitches       = 0;
     /**
      * The Total cpu time spent processing.
      */
-    public long totalCPUTimeSpentProcessing = 0;
+    public long totalCPUTimeSpentProcessing    = 0;
     /**
      * The Total number of times in cpu queue.
      */
-    public long totalNofTimesInCPUQueue     = 0;
+    public long totalNofTimesInCPUQueue        = 0;
     /**
      * The Total number of times in io queue.
      */
-    public long totalNofTimesInIOQueue      = 0;
+    public long totalNofTimesInIOQueue         = 0;
     /**
      * The Total system time.
      */
-    public long totalSystemTime             = 0;
+    public long totalSystemTime                = 0;
     /**
-     * The Total time spent waiting for cpu.
+     * The Total time spent waiting for CPU.
      */
-    public long totalTimeSpentWaitingForCpu = 0;
+    public long totalTimeSpentWaitingForCpu    = 0;
+    /**
+     * The Total time spent waiting for I/O to process.
+     */
+    public long totalTimeSpentWaitingForIo     = 0;
+    /**
+     * The Total I/O time spent for processing.
+     */
+    public long totalIOTimeSpentProcessing     = 0;
 
     /**
      * Prints out a report summarizing all collected data about the simulation.
@@ -66,6 +72,7 @@ public class Statistics {
         log();
         log("Simulation statistics:");
         log();
+
         log("Number of completed processes:", nofCompletedProcesses);
         log("Number of created processes:", nofCreatedProcesses);
         log("Number of forced process switches:", nofForcedProcessSwitches);
@@ -100,11 +107,18 @@ public class Statistics {
                     (float) totalNofTimesInIOQueue / nofCompletedProcesses);
             log();
 
-            log("Average time spent in system per process:", (float) totalSystemTime / nofCompletedProcesses + " ms");
+            log("Average time spent in system per process:",
+                    (float) totalSystemTime / nofCompletedProcesses + " ms");
             log("Average time spent waiting for memory per process:",
                     (float) totalTimeSpentWaitingForMemory / nofCompletedProcesses + " ms");
             log("Average time spent waiting for cpu per process:",
                     (float) totalTimeSpentWaitingForCpu / nofCompletedProcesses + " ms");
+            log("Average time spent processing per process:",
+                    (float) totalCPUTimeSpentProcessing / nofCompletedProcesses + " ms");
+            log("Average time spent waiting for I/O per process:",
+                    (float) totalTimeSpentWaitingForIo / nofCompletedProcesses + " ms");
+            log("Average time spent in I/O per process:",
+                    (float) totalIOTimeSpentProcessing / nofCompletedProcesses + " ms");
         }
     }
 

@@ -45,7 +45,7 @@ public class Simulator implements Constants {
         eventQueue = new EventQueue();
         memory = new Memory(memoryQueue, memorySize, statistics);
         clock = 0;
-        this.cpu = new CPU(gui, cpuQueue, maxCpuTime, statistics);
+        this.cpu = new CPU(cpuQueue, maxCpuTime, statistics);
         this.io = new IO(gui, ioQueue, avgIoTime, statistics);
     }
 
@@ -55,11 +55,11 @@ public class Simulator implements Constants {
      */
     public void simulate() {
         System.out.print("Simulating...");
-        eventQueue.insertEvent(new Event(NEW_PROCESS, 0)); // Genererate the first process arrival event
+        eventQueue.insertEvent(new Event(NEW_PROCESS, 0)); // create the first process arrival event
         while (clock < simulationLength && !eventQueue.isEmpty()) { // Process until the simulation length is exceeded
             Event event          = eventQueue.getNextEvent(); // Find the next event: removed from event queue
             long  timeDifference = event.getTime() - clock; // Find out how much time that passed...
-            clock = event.getTime(); // ...and update the clock.
+            clock = event.getTime(); // ...and update the clock time.
             memory.timePassed(timeDifference); // Let the memory unit know that time has passed
             gui.timePassed(timeDifference);
             cpu.timePassed(timeDifference);
@@ -118,7 +118,6 @@ public class Simulator implements Constants {
         while (p != null) { // if there is enough memory, processes are moved from the memory queue to the cpu queue
             cpu.insertProcess(p);
             if (cpu.isIdle()) switchProcess();
-            //            if (cpu.isIdle()) processEvent(new Event(SWITCH_PROCESS, clock));
             flushMemoryQueue(); // try to use the freed memory
             p = memory.checkMemory(clock); // Check for more free memory
         }
@@ -128,27 +127,22 @@ public class Simulator implements Constants {
      * Simulates a process switch.
      */
     private void switchProcess() {
-        //Stop our current process
-        Process process = cpu.removeProcess();
+        Process process = cpu.removeProcess(); //Stop the current active process
         if (process != null) {
-            //If we actually were processing something, the statistics for process are already updated
-            //But we need to update global statistics, and add the process back to queue
             statistics.nofForcedProcessSwitches++;
             cpu.insertProcess(process);
         }
-
         Process nextProcess = cpu.switchProcess();
         gui.setCpuActive(nextProcess);
         if (nextProcess != null) { //The cpu queue may have been empty, in that case nextProcess == null
-            nextProcess.enterCPU(clock);
-            if (nextProcess.getTimeToNextIoOperation() > cpu.getMaxCpuTime() && // not switch to IO queue
-                nextProcess.getCpuTimeNeeded() > cpu.getMaxCpuTime()) { // need to switch back to cpu queue
-                eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
-            } else if (nextProcess.getTimeToNextIoOperation() > nextProcess.getCpuTimeNeeded()) {
-                //If next event is the end of process, schedule END_PROCESS
+            if (nextProcess.getCpuTimeNeeded() > cpu.getMaxCpuTime()) { // still need more cpu processes
+                if (nextProcess.getCpuTimeNeeded() < nextProcess.getTimeToNextIoOperation()) { // send back to cpu queue
+                    eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+                } else { // cpu time needed >= time for next operation : time for IO_REQUEST
+                    eventQueue.insertEvent(new Event(IO_REQUEST, clock + nextProcess.getTimeToNextIoOperation()));
+                }
+            } else { // cpu time needed <= Max cpu time  : END_PROCESS
                 eventQueue.insertEvent(new Event(END_PROCESS, clock + nextProcess.getCpuTimeNeeded()));
-            } else { //Otherwise the next event must be IO request, schedule IO_REQUEST
-                eventQueue.insertEvent(new Event(IO_REQUEST, clock + nextProcess.getTimeToNextIoOperation()));
             }
         }
     }
@@ -167,26 +161,10 @@ public class Simulator implements Constants {
      * Processes an event signifying that the active process needs to perform an I/O operation.
      */
     private void processIoRequest() {
-        //Stop our current process
-        Process oldProcess = cpu.removeProcess();
-        //Insert it into IO queue
-        io.insertProcess(oldProcess);
-
-        //If IO is idle, start processing immediately and schedule END_IO
-        if (io.isIdle()) {
-            io.switchProcess();
-            this.eventQueue.insertEvent(new Event(Constants.END_IO, clock + io.getAvgIoTime()));
+        Event e = io.addIoRequest(cpu.removeProcess());
+        if (e != null) {
+            this.eventQueue.insertEvent(e);
         }
-        //        //CPU is now free, schedule new process
-        //        switchProcess();
-        //
-        //
-        //
-        //        Event e = io.addIoRequest(cpu.removeProcess(), clock);
-        //        if (e != null) {
-        //            this.eventQueue.insertEvent(e);
-        //            processEvent(e);
-        //        }
         switchProcess();
     }
 
@@ -195,16 +173,14 @@ public class Simulator implements Constants {
      */
     private void endIoOperation() {
         Process process = io.removeProcess(); // stop current IO operation
-        gui.setIoActive(process);
         if (process != null) {
             statistics.nofProcessedIoOperations++; // update statistics
-            cpu.insertProcess(process); // add back to cup queue
+            cpu.insertProcess(process); // IO operation done & add back to cup queue
             if (cpu.isIdle()) switchProcess(); // start process if cpu is free
-            //            Event e = io.startIoOperation(clock);
+        }
+        Process newProcess = io.switchProcess(); // try to get a new process from IO queue
+        if (newProcess != null) { // if there is a new process schedule it to END_IO
             this.eventQueue.insertEvent(new Event(Constants.END_IO, clock + io.getAvgIoTime()));
-            //            if (e != null) {
-            //                this.eventQueue.insertEvent(e);
-            //            }
         }
     }
 
@@ -234,7 +210,7 @@ public class Simulator implements Constants {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("enter '0' auto input, else customer input!");
         if (readLong(reader) == 0) {
-            new SimulationGui(2048, 500, 225, 250000, 5000);
+            new SimulationGui(2048, 100, 350, 90000, 2050);
         } else {
             System.out.println("Please input system parameters: ");
             System.out.print("Memory size (KB): ");
