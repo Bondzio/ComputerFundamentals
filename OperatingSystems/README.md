@@ -340,7 +340,8 @@ public enum Singleton {
 	- A consumable resource is one that is destroyed when it is acquired by a process;
 		- examples include messages and information in I/O buffers.
 
-There are three general approaches to dealing with deadlock:
+###### There are three general approaches to dealing with deadlock:
+
 1. **prevention**
 	- Deadlock prevention guarantees that deadlock will not occur, by assuring that one of the necessary conditions for deadlock is not met.
 2. **detection**
@@ -425,7 +426,9 @@ Deadlock prevention strategies are very conservative;
 > Memory management is the act of managing computer memory at the system level. The essential requirement of memory management is to provide ways to dynamically allocate portions of momory to programs at their request, and free it for reuse when no longer needed. This is critical to any advanced computer system where more than a single process might be underway at any time. (wikipedia)
 
 ### Memory management requirements
+
 The requirements that memory management is intended to satisfy include:
+
 1. Relocation
 	- relocate the process to a different area of memory.
 2. Protection
