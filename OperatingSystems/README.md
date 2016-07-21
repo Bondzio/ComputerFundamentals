@@ -525,6 +525,7 @@ name			| description
 **Real address**	|The address of a storage location in main memory.		
 
 **Two characteristics of paging and segmentation:**
+
 1. All memory references within a process are logical addresses that are dynamically translated into physical addresses at run time.
 	- This means that a process may be swapped in and out of main memory such that it occupies different regions of main memory at different times during the course of execution.
 2. A process may be broken up into a number of pieces (pages or segments) and these pieces need not be contiguously located in main memory during execution.
@@ -533,6 +534,7 @@ name			| description
 If the preceding two characteristics are present, then it is not necessary that all of the pages or all of the segments of a process be in main memory during execution.
 
 Improved system utilization:
+
 1. **More processes may be maintained in main memory**.
 	- Because we are only going to load some of the pieces of any particular process, 
 	- there is room for more processes.
@@ -553,23 +555,26 @@ Improved system utilization:
 > A much larger memory is allocate on disk, referred as **virtual memory**.
  
 ##9. Uniprocessor Scheduling 
+
 > In a multiprogramming system, multiple processes exist concurrently in **main memory**.
 > - Each process alternates between using a processor and waiting for some event to occur,
-> 	- such as the completion of an I/O operation.
+>   - such as the completion of an I/O operation.
 > 
 > The **processor** or processors are kept busy by executing one process while the others wait.
 
 The key to multiprogramming is scheduling. Four types of scheduling are typically involved.
+
 1. **Long-term scheduling**
-	- The decision to add to the pool of processes to be executed.
+    - The decision to add to the pool of processes to be executed.
 2. **Medium-term scheduling**
-	- The decision to add to the number of processes that are partially or fully in main memory.
+    - The decision to add to the number of processes that are partially or fully in main memory.
 3. **Short-term scheduling**
-	- The decision as to which available process will be executed by the processor.
+    - The decision as to which available process will be executed by the processor.
 4. **I/O scheduling**
-	- The decision as to which process's pending I/O request shall be handled by an available I/O device.
+    - The decision as to which process's pending I/O request shall be handled by an available I/O device.
 
 ###### Key points of this chapter:
+
 - The OS must make three types of scheduling decisions with respect to the execution of processes.
 	1. Long-term 	scheduling determines when new processes are admitted to the system.
 	2. Medium-term 	scheduling is part of the swapping function and determines when a program is brought partially or fully into main memory so that it may be executed.
@@ -600,19 +605,19 @@ The choice of scheduling algorithm will depend on expected performance and on im
 
 ### 9.1 Types of processor scheduling
 - The aim of processor scheduling is to assign processes to be executed by the processor or processors over time.
-	- in a way that meets system objectives, such as:
-		- response time
+    - in a way that meets system objectives, such as:
+        - response time
 		- throughput
 		- processor efficiency
 - In many systems, this scheduling activity is broken down into three separate functions:
-	1. long-term scheduling
+    1. long-term scheduling
 		- Determines which programs are admitted to the system for processing
 		- Controls the degree of multiprogramming
 		- More processes, smaller percentage of time each process is executed
-	2. medium-term scheduling
+    2. medium-term scheduling
 		- Part of the swapping function
 		- Based on the need to manage the degree of multiprogramming
-	3. short-term scheduling
+    3. short-term scheduling
 		- Know as the dispatcher
 		- Executes most frequently
 		- Invoked when an event occurs
@@ -738,6 +743,7 @@ The choice of scheduling algorithm will depend on expected performance and on im
 
 ### 11.1 I/O devices
 external devices engage in I/O with computer systems can be roughly grouped into:
+
 1. **Human readable**:
 	- Suitable for communicating with the computer user.
 		- e.g.
@@ -761,6 +767,7 @@ external devices engage in I/O with computer systems can be roughly grouped into
 
 ### 11.2 Organization of the I/O function:
 three techniques for performing I/O
+
 1. **Programmed I/O**:
 	- the processor issues an I/O command, on behalf of a process, to an I/O module;
 	- that process then busy waits for the operation to be completed before proceeding.
@@ -779,6 +786,7 @@ three techniques for performing I/O
 ### 11.3 Operating system design issues
 ###### Design Objectives
 Two objectives are paramount in designing the I/O facility:
+
 1. efficiency 
 	- I/O operations often form a bottleneck in a computing system.
 	- most I/O devices are extremely slow compared with main memory and the processor.
@@ -858,12 +866,14 @@ File system (c) shows a representative structure for managing I/O on a secondary
 
 ### 11.4 I/O buffering
 To avoid overheads and inefficiencies, it is sometimes convenient to 
+
 - perform input transfers in advance of requests being made and to perform output transfers some time after the request is made.
 - this techique is known as buffering.
 
 ### 11.5 Disk scheduling
 Disk are significant slower than memory, and the gap is expected to continue in the future.
 ###### Disk performance parameters
+
 - **Seek time**
 - **Rotational delay**
 - **Transfer time**
@@ -889,7 +899,6 @@ Disk are significant slower than memory, and the gap is expected to continue in 
 - Whatever file structure is chosen, a directory service is also needed.
 	- This allows files to be organized in a hierarchical fashion. 
 	- This organization is useful to the user in keeping track of files and is useful to the file management system in providing access control and other services to users.
-
 - File records, even when of fixed size, generally do not conform to the size of a physical disk block.
 	- Accordingly, some sort of blocking strategy is needed.
 	- A trade off among complexity, performance, and space utilization determines the blocking strategy to be used.
@@ -903,6 +912,7 @@ Disk are significant slower than memory, and the gap is expected to continue in 
 ### 12.1 Overview
 ###### Files and File Systems
 From the users perspective, one of the most important parts of an operting system is the **file system**.
+
 - the file system provides the resource abstractions
 	- typically associated with secondary storage.
 	- file system permits users to create data collections, called files, which has properties:
@@ -925,6 +935,7 @@ From the users perspective, one of the most important parts of an operting syste
 
 ###### File Structure
 Four common terms:
+
 1. **Field**
 	- the basic element of data.
 2. **Record**
