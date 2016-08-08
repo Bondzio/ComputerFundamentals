@@ -155,6 +155,7 @@ Threads created by the user in a 1 : 1 correspondence with schedulable entities 
 > 	 	- by throwing an exception that propagates beyond the run method.
 
 There are two ways to create a new thread of execution. 
+
 1. declare a class to be a subclass of (`extends`) `Thread`. 
 	- This subclass should override the run method of class Thread. 
 	- An instance of the subclass can then be allocated and started.
@@ -372,16 +373,17 @@ public enum Singleton {
 Four deadlock conditions:
 
 Three conditions of policy must be present for a deadlock to be possible:
+
 1. **Mutual exculusion**
 	- A resource can only be assigned to one or no process at onece. 
 2. **Hold and wait**
 	- Processes currently holding resources can request more resources.
 3. **No preemption**
 	- Processes cannot lose a resource against its will.
-> In many ways these conditions are quite desirable.
-> - for example: **Mutual exclusion** is needed to ensure consistency of results and the integrity of a data base.
-> - **Preemption** should not be done arbitrarily.
-> 	- when data resources are involved, preemption must be supported by a rollback recovery mechanism, which restores a process and its resources to a suitable previous state from which the process can eventually repeat its actions.
+		- In many ways these conditions are quite desirable.
+			- for example: **Mutual exclusion** is needed to ensure consistency of results and the integrity of a data base.
+			- **Preemption** should not be done arbitrarily.
+			- when data resources are involved, preemption must be supported by a rollback recovery mechanism, which restores a process and its resources to a suitable previous state from which the process can eventually repeat its actions.
 4. **Circular wait**
 	- There must be a circular chain of two or more processes, each waiting for a resource held by the next member of the chain.
 
@@ -401,6 +403,7 @@ In **deadlock prevention** we constrain resource requests to prevent at least on
 	- Deadlock avoidance requires knowledge of further process resource requests.
 
 Two apporaches to deadlock avoidance:
+
 1. do not start a process if its demands might lead to deadlock.
 2. do not grant an incremental resource request to a process if allocation might lead to deadlock.
 
